@@ -1,0 +1,91 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Guild {
+  id         String      @id @map("_id")
+  voices     Voice[]
+  blacklists Blacklist[]
+  toggles    Toggle[]
+  configs    Config[]
+  setups     Setup[]
+}
+
+model Setup {
+  id               String @id @map("_id")
+  guild            Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  guildId          String
+  creatorChannelId String @unique
+  panelCategory    String
+}
+
+model Voice {
+  id           String   @id @map("_id")
+  guildId      String
+  userId       String
+  channelId    String   @unique
+  panelMessage String
+  isLocked     Boolean
+  isHidden     Boolean
+  guild        Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  invites      Invite[]
+}
+
+model Invite {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  channelId String
+  inviterId String
+  inviteeId String
+  voice     Voice  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+}
+
+model Blacklist {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String?
+  guildId String?
+  reason  String
+  guild   Guild?  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guildId])
+}
+
+model Toggle {
+  id       String  @id @map("_id")
+  guildId  String
+  name     Boolean
+  limit    Boolean
+  bitrate  Boolean
+  nsfw     Boolean
+  claim    Boolean
+  lock     Boolean
+  unlock   Boolean
+  permit   Boolean
+  reject   Boolean
+  invite   Boolean
+  hide     Boolean
+  unhide   Boolean
+  transfer Boolean
+  guild    Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+}
+
+model Config {
+  id           String @id @map("_id")
+  guildId      String
+  userId       String
+  channelName  String
+  channelLimit Int
+  guild        Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+}
+
+model Staff {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @unique
+  position String
+  bio      String
+}

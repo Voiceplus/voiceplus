@@ -1,0 +1,1 @@
+export const mainColor = "#CA265B";
