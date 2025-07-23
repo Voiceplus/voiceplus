@@ -2,12 +2,14 @@ import { Colors, GuildMember, EmbedBuilder } from "discord.js";
 import Command from "../../lib/structs/Command.js";
 import { getUser, getMember } from "../../lib/util/functions.js";
 
-class GrantCommand extends Command {
+class StaffCommand extends Command {
   constructor() {
-    super();
-    this.name = "staff";
-    this.description = "Grant or remove staff permissions from a user.";
-    this.args = "[user] [position] [--r]";
+    super({
+      name: "staff",
+      description: "Grant or remove staff permissions from a user.",
+      args: "[user] [position] [--r]",
+      devOnly: true,
+    });
   }
 
   async run(message, args) {
@@ -23,7 +25,7 @@ class GrantCommand extends Command {
       (await getMember(message.guild, args[0])) ?? (await getUser(args[0]));
     if (!user) throw "Invalid user.";
 
-    const position = args.join(" ") || "Moderator";
+    const position = args.slice(1).join(" ") || "Moderator";
 
     const embed = new EmbedBuilder();
 
@@ -97,4 +99,4 @@ class GrantCommand extends Command {
   }
 }
 
-export default GrantCommand;
+export default StaffCommand;

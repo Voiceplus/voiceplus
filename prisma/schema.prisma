@@ -50,7 +50,10 @@ model Blacklist {
   userId  String?
   guildId String?
   reason  String
-  guild   Guild?  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  sent    Boolean @default(false)
+  date    BigInt
+
+  guild Guild? @relation(fields: [guildId], references: [id], onDelete: Cascade)
 
   @@unique([userId, guildId])
 }

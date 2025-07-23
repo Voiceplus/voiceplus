@@ -1,15 +1,21 @@
 import { Colors, EmbedBuilder } from "discord.js";
 import Command from "../../lib/structs/Command.js";
-import { getUser, getMember, checkBlacklisted } from "../../lib/util/functions.js";
+import {
+  getUser,
+  getMember,
+  checkBlacklisted,
+} from "../../lib/util/functions.js";
 
-class UnblacklistCommand extends Command {
+class WhitelistCommand extends Command {
   constructor() {
-    super();
-    this.name = "unblacklist";
-    this.description = "Remove a user or a guild from the blacklist.";
-    this.args = "[--guild] <ID or @mention>";
-    this.aliases = ["ubl"];
-    this.devOnly = true;
+    super({
+      name: "whitelist",
+      description: "Remove a user or a guild from the blacklist.",
+      args: "[--guild] <ID or @mention>",
+      aliases: ["ubl"],
+      devOnly: true,
+      allowDM: true,
+    });
   }
 
   async run(message, args) {
@@ -65,4 +71,4 @@ class UnblacklistCommand extends Command {
   }
 }
 
-export default UnblacklistCommand;
+export default WhitelistCommand;

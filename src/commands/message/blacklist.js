@@ -1,15 +1,21 @@
 import { Colors, EmbedBuilder, GuildMember } from "discord.js";
 import Command from "../../lib/structs/Command.js";
-import { getUser, getMember, checkBlacklisted } from "../../lib/util/functions.js";
+import {
+  getUser,
+  getMember,
+  checkBlacklisted,
+} from "../../lib/util/functions.js";
 
 class BlacklistCommand extends Command {
   constructor() {
-    super();
-    this.name = "blacklist";
-    this.description = "Blacklist a user or a guild from using the bot.";
-    this.args = "[--guild] <ID or @mention> [reason]";
-    this.aliases = ["bl"];
-    this.devOnly = true;
+    super({
+      name: "blacklist",
+      description: "Blacklist a user or a guild from using the bot.",
+      args: "[--guild] <ID or @mention> [reason]",
+      aliases: ["bl"],
+      devOnly: true,
+      allowDM: true,
+    });
   }
 
   async run(message, args) {
@@ -22,7 +28,7 @@ class BlacklistCommand extends Command {
     const embed = new EmbedBuilder();
 
     if (isGuild) {
-      const guildId = args[0] ;
+      const guildId = args[0];
 
       const isBlacklisted = await checkBlacklisted(guildId);
       if (isBlacklisted?.guildId === guildId) {
@@ -42,8 +48,7 @@ class BlacklistCommand extends Command {
       return message.reply({ embeds: [embed] });
     } else {
       const user =
-        (await getMember(message.guild, args[0])) ??
-        (await getUser(args[0]));
+        (await getMember(message.guild, args[0])) ?? (await getUser(args[0]));
 
       if (!user) throw "Invalid user.";
 

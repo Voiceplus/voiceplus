@@ -1,16 +1,18 @@
 import Command from "../../lib/structs/Command.js";
 import { EmbedBuilder } from "discord.js";
-import { mainColor } from "../../lib/util/constants.js";    
+import { mainColor } from "../../lib/util/constants.js";
 
 class GuildlistCommand extends Command {
   constructor() {
-    super();
-    this.name = "guildlist";
-    this.description = "Get a list of all guilds the bot is in.";
-    this.args = "";
-    this.allowDM = true;
-    this.aliases = ["gl"];
+    super({
+      name: "guildlist",
+      description: "Get a list of all guilds the bot is in.",
+      args: "",
+      allowDM: true,
+      aliases: ["gl", "guilds"],
+    });
   }
+
   async run(message) {
     const guilds = this.client.guilds.cache;
     const embed = new EmbedBuilder()

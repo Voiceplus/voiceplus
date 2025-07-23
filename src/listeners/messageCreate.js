@@ -7,9 +7,7 @@ class MessageCreateListener extends Listener {
   }
 
   async run(message) {
-    if (message.inGuild()) {
-      messageCommand(message);
-    }
+    messageCommand(message);
   }
 }
 

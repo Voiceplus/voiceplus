@@ -21,17 +21,27 @@ export default async function (message) {
     client.commands.message.get(commandName) ||
     client.commands.message.get(client.aliases.get(commandName));
 
-  if (!command) return
+  if (!command) return;
 
   if (message.inGuild()) {
+    // In a guild: check staff or dev
     const staffUserIds = await getStaff();
     const isStaff = staffUserIds.includes(message.author.id);
     const isDev = devIds.includes(message.author.id);
 
-    if (!isStaff && !isDev) return;
+    if (!isStaff && !isDev) return; // silently ignore non-staff/dev in guild
   } else {
+    // In DM: check allowDM and staff/dev
+    const staffUserIds = await getStaff();
+    const isStaff = staffUserIds.includes(message.author.id);
+    const isDev = devIds.includes(message.author.id);
+
     if (!command.allowDM) {
       return message.reply("That command must be run in a server.");
+    }
+
+    if (!isStaff && !isDev) {
+      return message.reply("You don’t have permission to use commands in DMs.");
     }
   }
 

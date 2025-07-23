@@ -2,24 +2,27 @@ import { PermissionsBitField } from "discord.js";
 import client from "../../client.js";
 
 export default class Command {
-  constructor() {
-    this.data = null;
-    this.clientPermissions = null;
+  constructor(options = {}) {
+    this.data = options.data || null;
+    this.clientPermissions = options.clientPermissions
+      ? new PermissionsBitField(options.clientPermissions)
+      : null;
 
-    this.name = null;
-    this.description = null;
-    this.aliases = [];
-    this.args = null;
-    this.slashOnly = false;
+    this.name = options.name || null;
+    this.description = options.description || null;
+    this.aliases = options.aliases || [];
+    this.args = typeof options.args === "string" ? [options.args] : options.args || null;
+    this.slashOnly = options.slashOnly || false;
 
-    this.devOnly = false;
-    this.allowDM = false;
-    this.guildResolve = false;
+    this.devOnly = options.devOnly || false;
+    this.allowDM = options.allowDM || false;
+    this.guildResolve = options.guildResolve || false;
 
     this.client = client;
   }
 }
 
+// You can keep or remove these if you want, but now you don't need them for basic usage
 export function data(dataObject) {
   return function (TargetClass) {
     return class extends TargetClass {

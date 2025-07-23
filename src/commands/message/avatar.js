@@ -3,13 +3,15 @@ import { getUser } from "../../lib/util/functions.js";
 
 class AvatarCommand extends Command {
   constructor() {
-    super();
-    this.name = "avatar";
-    this.description = "Get a user's avatar.";
-    this.args = "[user]";
-    this.allowDM = true;
-    this.aliases = ["av", "pfp"];
+    super({
+      name: "avatar",
+      description: "Get a user's avatar.",
+      args: "[user]",
+      allowDM: true,
+      aliases: ["av", "pfp"],
+    });
   }
+
   async run(message, args) {
     const user = args.length > 0 ? await getUser(args[0]) : message.author;
     if (!user) return message.reply("Invalid user.");
