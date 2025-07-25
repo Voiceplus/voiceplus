@@ -80,14 +80,16 @@ class Client extends DJSClient {
   //     }
   //   }
 
-    async _cacheSlashCommands() {
-      const files = fs.readdirSync('src/commands/slash');
-      for (const file of files) {
-        const cmdClass = (await import(`../../commands/slash/${file.slice(0, -3)}.js`)).default;
-        const cmdInstant = new cmdClass();
-        this.commands.slash.set(cmdInstant.data.name, cmdInstant);
-      }
+  async _cacheSlashCommands() {
+    const files = fs.readdirSync("src/commands/slash");
+    for (const file of files) {
+      const cmdClass = (
+        await import(`../../commands/slash/${file.slice(0, -3)}.js`)
+      ).default;
+      const cmdInstant = new cmdClass();
+      this.commands.slash.set(cmdInstant.data.name, cmdInstant);
     }
+  }
 
   async _cacheMessageCommands() {
     const files = fs.readdirSync("src/commands/message");

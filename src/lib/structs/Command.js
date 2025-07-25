@@ -11,7 +11,8 @@ export default class Command {
     this.name = options.name || null;
     this.description = options.description || null;
     this.aliases = options.aliases || [];
-    this.args = typeof options.args === "string" ? [options.args] : options.args || null;
+    this.args =
+      typeof options.args === "string" ? [options.args] : options.args || null;
     this.slashOnly = options.slashOnly || false;
 
     this.devOnly = options.devOnly || false;
@@ -22,7 +23,6 @@ export default class Command {
   }
 }
 
-// You can keep or remove these if you want, but now you don't need them for basic usage
 export function data(dataObject) {
   return function (TargetClass) {
     return class extends TargetClass {
@@ -49,7 +49,8 @@ export function properties(props) {
         this.name = props.name ?? null;
         this.description = props.description ?? null;
         this.aliases = props.aliases ?? [];
-        this.args = typeof props.args === 'string' ? [props.args] : props.args ?? null;
+        this.args =
+          typeof props.args === "string" ? [props.args] : props.args ?? null;
         this.slashOnly = props.slashOnly ?? false;
       }
     };
