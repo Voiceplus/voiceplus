@@ -10,6 +10,7 @@ datasource db {
 
 model Guild {
   id         String      @id @map("_id")
+  language   String      @default("en")
   voices     Voice[]
   blacklists Blacklist[]
   toggles    Toggle[]
@@ -18,17 +19,17 @@ model Guild {
 }
 
 model Setup {
-  id               String @id @map("_id")
-  guild            Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
   guildId          String
   creatorChannelId String @unique
-  panelCategory    String
+  categoryId       String
+  guild            Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
 }
 
 model Voice {
-  id           String   @id @map("_id")
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   guildId      String
-  userId       String
+  ownerId      String
   channelId    String   @unique
   panelMessage String
   isLocked     Boolean
@@ -39,9 +40,10 @@ model Voice {
 
 model Invite {
   id        String @id @default(auto()) @map("_id") @db.ObjectId
-  channelId String
-  inviterId String
-  inviteeId String
+  guildId   String
+  channelId String @db.ObjectId
+  inviterId String @db.ObjectId
+  inviteeId String @db.ObjectId
   voice     Voice  @relation(fields: [channelId], references: [id], onDelete: Cascade)
 }
 

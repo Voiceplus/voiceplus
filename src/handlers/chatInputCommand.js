@@ -1,42 +1,46 @@
-import { EmbedBuilder, Colors, MessageFlags } from "discord.js";
+import {
+  EmbedBuilder,
+  Colors,
+  MessageFlags,
+  PermissionsBitField,
+} from "discord.js";
 import client from "../client.js";
-import { checkBlacklisted, getDevIds } from "../lib/util/functions.js";
+import {
+  checkBlacklisted,
+  getDevIds,
+  checkUserPermissions,
+  checkBotPermissions,
+} from "../lib/util/functions.js";
 
 export const unresolvedGuilds = new Set();
 
 export default async function (interaction) {
+  const embed = new EmbedBuilder();
+
   const userBlacklist = await checkBlacklisted(interaction.user.id);
   if (userBlacklist) {
-    const embed = new EmbedBuilder()
-      .setColor(Colors.Red)
-      .setAuthor({
-        name: `You are blacklisted from ${client.user.username}!`,
-        iconURL: client.user.displayAvatarURL(),
-      })
-      .setDescription(
-        `You have been indefinitely blacklisted from using ${client.user.username}. If this was a false blacklist, please contact our team by joining our [Support Server](https://discord.gg/xenabot).`
-      )
-      .addFields(
-        { name: "Reason", value: userBlacklist.reason },
-        {
-          name: "Date",
-          value: `<t:${Math.floor(
-            new Date(userBlacklist.date).getTime() / 1000
-          )}>`,
-        }
-      );
+    embed.setColor(Colors.Red);
+    embed.setAuthor({
+      name: `You are blacklisted from ${client.user.username}!`,
+      iconURL: client.user.displayAvatarURL(),
+    });
+    embed.setDescription(
+      `You have been indefinitely blacklisted from using ${client.user.username}. If this was a false blacklist, please contact our team by joining our [Support Server](https://discord.gg/xenabot).`
+    );
+    embed.addFields(
+      { name: "Reason", value: userBlacklist.reason },
+      {
+        name: "Date",
+        value: `<t:${userBlacklist.date}>`,
+      }
+    );
 
     if (!userBlacklist.sent) {
-      try {
-        await interaction.member?.send({ embeds: [embed] });
-      } catch (error) {
-        console.error("Failed to DM user about blacklist:", error);
-      }
+      await interaction.member?.send({ embeds: [embed] }).catch(() => {});
 
       await client.db.blacklist.updateMany({
         where: {
           userId: interaction.user.id,
-          guildId: null,
         },
         data: { sent: true },
       });
@@ -63,26 +67,17 @@ export default async function (interaction) {
           { name: "Reason", value: guildBlacklist.reason },
           {
             name: "Date",
-            value: `<t:${Math.floor(
-              new Date(guildBlacklist.date).getTime() / 1000
-            )}>`,
+            value: `<t:${guildBlacklist.date}>`,
           }
         );
 
       if (!guildBlacklist.sent) {
         await client.db.blacklist.updateMany({
-          where: {
-            userId: null,
-            guildId: interaction.guild.id,
-          },
+          where: { guildId: interaction.guild.id },
           data: { sent: true },
         });
 
-        try {
-          await interaction.channel.send({ embeds: [embed] });
-        } catch (error) {
-          console.error(error);
-        }
+        await interaction.channel.send({ embeds: [embed] }).catch(() => {});
       }
 
       await interaction.guild.leave();
@@ -117,18 +112,13 @@ export default async function (interaction) {
   }
 
   if (command.clientPermissions) {
-    const botPerms = interaction.guild?.members?.me?.permissions;
-    if (!botPerms?.has(command.clientPermissions)) {
-      const missing = command.clientPermissions
-        .toArray()
-        .map((p) => p.replace(/([a-z])([A-Z])/g, "$1 $2"))
-        .join("`, `");
+    if (await checkBotPermissions(interaction, command.clientPermissions))
+      return;
+  }
 
-      return interaction.reply({
-        content: `I don't have the required permissions to complete this command.\nMissing: \`${missing}\``,
-        flags: MessageFlags.Ephemeral,
-      });
-    }
+  if (command.userPermissions) {
+    if (await checkUserPermissions(interaction, command.userPermissions))
+      return;
   }
 
   if (command.guildResolve) {
@@ -137,7 +127,7 @@ export default async function (interaction) {
       return interaction.reply({
         content:
           "Another process of this command is currently running. Please wait for it to finish before running this command.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -156,7 +146,10 @@ export default async function (interaction) {
       );
 
     if (!interaction.replied && !interaction.deferred) {
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral,
+      });
     } else {
       await interaction.editReply({ embeds: [embed] });
     }

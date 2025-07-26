@@ -4,8 +4,13 @@ import client from "../../client.js";
 export default class Command {
   constructor(options = {}) {
     this.data = options.data || null;
+
     this.clientPermissions = options.clientPermissions
       ? new PermissionsBitField(options.clientPermissions)
+      : null;
+
+    this.userPermissions = options.userPermissions
+      ? new PermissionsBitField(options.userPermissions)
       : null;
 
     this.name = options.name || null;
@@ -13,8 +18,8 @@ export default class Command {
     this.aliases = options.aliases || [];
     this.args =
       typeof options.args === "string" ? [options.args] : options.args || null;
-    this.slashOnly = options.slashOnly || false;
 
+    this.slashOnly = options.slashOnly || false;
     this.devOnly = options.devOnly || false;
     this.allowDM = options.allowDM || false;
     this.guildResolve = options.guildResolve || false;
@@ -43,14 +48,21 @@ export function properties(props) {
         this.clientPermissions = props.clientPermissions
           ? new PermissionsBitField(props.clientPermissions)
           : null;
+
+        this.userPermissions = props.userPermissions
+          ? new PermissionsBitField(props.userPermissions)
+          : null;
+
         this.devOnly = props.devOnly ?? false;
         this.allowDM = props.allowDM ?? false;
         this.guildResolve = props.guildResolve ?? false;
+
         this.name = props.name ?? null;
         this.description = props.description ?? null;
         this.aliases = props.aliases ?? [];
         this.args =
           typeof props.args === "string" ? [props.args] : props.args ?? null;
+
         this.slashOnly = props.slashOnly ?? false;
       }
     };

@@ -1,17 +1,18 @@
-import { SlashCommandBuilder } from "discord.js";
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import Command from "../../lib/structs/Command.js";
 
 class AvatarCommand extends Command {
   constructor() {
-    super();
-    this.data = new SlashCommandBuilder()
-      .setName("avatar")
-      .setDescription("Get a users avatar.")
-      .addUserOption((option) =>
-        option.setName("user").setDescription("The user to get the avatar of.")
-      );
-
-      this.allowDM = true;
+    super({
+      data: new SlashCommandBuilder()
+        .setName("avatar")
+        .setDescription("Get a users avatar.")
+        .addUserOption((option) =>
+          option
+            .setName("user")
+            .setDescription("The user to get the avatar of.")
+        ),
+    });
   }
 
   async run(interaction) {

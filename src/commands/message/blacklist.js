@@ -26,6 +26,7 @@ class BlacklistCommand extends Command {
 
     const reason = args.slice(1).join(" ") || "No reason provided.";
     const embed = new EmbedBuilder();
+    const date = BigInt(Math.floor(Date.now() / 1000));
 
     if (isGuild) {
       const guildId = args[0];
@@ -39,7 +40,7 @@ class BlacklistCommand extends Command {
       }
 
       await this.client.db.blacklist.create({
-        data: { guildId, reason },
+        data: { guildId, reason, date },
       });
 
       embed
@@ -61,7 +62,7 @@ class BlacklistCommand extends Command {
       }
 
       await this.client.db.blacklist.create({
-        data: { userId: user.id, reason },
+        data: { userId: user.id, reason, date },
       });
 
       embed

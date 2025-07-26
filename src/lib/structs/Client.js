@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
-//import Button from './Button.js';
+import { loadLanguages, t } from "../util/functions.js";
 
 class Client extends DJSClient {
   constructor() {
@@ -60,6 +60,13 @@ class Client extends DJSClient {
     this.aliases = new Map();
     this.modals = new Map();
     this.buttons = new Map();
+    this.selectMenus = new Map();
+    this.languages = loadLanguages();
+  }
+
+  t(key, lang = "en", replacements = {}) {
+    // Just a proxy to your utility function
+    return t(this.languages, key, lang, replacements);
   }
 
   //   async _cacheModals() {
@@ -71,14 +78,27 @@ class Client extends DJSClient {
   //     }
   //   }
 
-  //   async _cacheButtons() {
-  //     const files = fs.readdirSync('src/buttons');
-  //     for (const file of files) {
-  //       const buttonClass = (await import(`../../buttons/${file.slice(0, -3)}.js`)).default;
-  //       const buttonInstant = new buttonClass();
-  //       this.buttons.set(buttonInstant.name, buttonInstant);
-  //     }
-  //   }
+  async _cacheSelectMenus() {
+    const files = fs.readdirSync("src/selectMenus");
+    for (const file of files) {
+      const selectMenuClass = (
+        await import(`../../selectMenus/${file.slice(0, -3)}.js`)
+      ).default;
+      const selectMenuInstance = new selectMenuClass();
+      this.selectMenus.set(selectMenuInstance.name, selectMenuInstance);
+    }
+  }
+
+  async _cacheButtons() {
+    const files = fs.readdirSync("src/buttons");
+    for (const file of files) {
+      const buttonClass = (
+        await import(`../../buttons/${file.slice(0, -3)}.js`)
+      ).default;
+      const buttonInstant = new buttonClass();
+      this.buttons.set(buttonInstant.name, buttonInstant);
+    }
+  }
 
   async _cacheSlashCommands() {
     const files = fs.readdirSync("src/commands/slash");
@@ -129,7 +149,8 @@ class Client extends DJSClient {
     await this._cacheSlashCommands();
     await this._cacheMessageCommands();
     // await this._cacheModals();
-    // await this._cacheButtons();
+    await this._cacheButtons();
+    await this._cacheSelectMenus();
     await this._loadListeners();
 
     await this.db.$connect();
