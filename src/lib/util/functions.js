@@ -9,6 +9,8 @@ import fs from "fs";
 import path from "path";
 export const commandsPermissionCache = new Map();
 
+const cooldowns = new Map();
+
 export async function confirmGuild(guildId) {
   if (!commandsPermissionCache.has(guildId)) {
     const permissions = await client.application.commands.permissions.fetch({
@@ -237,4 +239,21 @@ export async function getGuildLanguage(guildId) {
   return lang;
 }
 
+export function isOnCoolDown(member) {
+  const now = Date.now();
+  const last = cooldowns.get(member.id);
 
+  if (last && now - last < 5000) {
+    const resetAt = Math.floor((last + 5000) / 1000);
+
+    const embed = new EmbedBuilder()
+      .setColor(Colors.Red)
+      .setDescription(`You can create a channel again <t:${resetAt}:R>.`);
+
+    member.send({ embeds: [embed] }).catch(() => {});
+    return true;
+  }
+
+  cooldowns.set(member.id, now);
+  return false;
+}

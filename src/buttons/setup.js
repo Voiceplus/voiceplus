@@ -24,7 +24,6 @@ class setupButton extends Button {
     if (!option) return;
 
     if (option === "setup_voice") {
-      // Create the category
       const category = await interaction.guild.channels.create({
         name: "Voice+",
         type: 4,
@@ -78,7 +77,7 @@ class setupButton extends Button {
 
       await interaction.reply({
         embeds: [embed],
-        //flags: MessageFlags.Ephemeral,
+        flags: MessageFlags.Ephemeral,
       });
     }
   }

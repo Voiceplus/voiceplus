@@ -32,10 +32,10 @@ model Voice {
   ownerId      String
   channelId    String   @unique
   panelMessage String
-  isLocked     Boolean
-  isHidden     Boolean
   guild        Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
   invites      Invite[]
+
+  @@unique([guildId, ownerId])
 }
 
 model Invite {
@@ -61,7 +61,7 @@ model Blacklist {
 }
 
 model Toggle {
-  id       String  @id @map("_id")
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
   guildId  String
   name     Boolean
   limit    Boolean
@@ -80,12 +80,16 @@ model Toggle {
 }
 
 model Config {
-  id           String @id @map("_id")
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
   guildId      String
   userId       String
   channelName  String
   channelLimit Int
-  guild        Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  isLocked     Boolean @default(false)
+  isHidden     Boolean @default(false)
+  guild        Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
 }
 
 model Staff {

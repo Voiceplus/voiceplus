@@ -18,8 +18,7 @@ class Client extends DJSClient {
         Intents.GuildMessages,
         Intents.MessageContent,
         Intents.DirectMessages,
-        Intents.AutoModerationExecution,
-        Intents.AutoModerationConfiguration,
+        Intents.GuildVoiceStates,
       ],
       partials: [Partials.Message, Partials.Channel],
       makeCache: Options.cacheWithLimits({
@@ -30,6 +29,7 @@ class Client extends DJSClient {
         VoiceStateManager: 0,
         GuildInviteManager: 0,
         GuildScheduledEventManager: 0,
+        VoiceStateManager: 50,
       }),
       sweepers: {
         ...Options.DefaultSweeperSettings,
@@ -133,15 +133,12 @@ class Client extends DJSClient {
         await import(`../../listeners/${file.slice(0, -3)}.js`)
       ).default;
       const listenerInstant = new listenerClass();
+
+      const handler = (...args) => listenerInstant.run(...args);
+
       listenerInstant.once
-        ? this.once(
-            listenerInstant.name,
-            (...args) => void listenerInstant.run(...args)
-          )
-        : this.on(
-            listenerInstant.name,
-            (...args) => void listenerInstant.run(...args)
-          );
+        ? this.once(listenerInstant.name, handler)
+        : this.on(listenerInstant.name, handler);
     }
   }
 

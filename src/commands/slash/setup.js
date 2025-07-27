@@ -5,6 +5,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder,
+  MessageFlags,
 } from "discord.js";
 import Command from "../../lib/structs/Command.js";
 import { mainColor } from "../../lib/util/constants.js";
@@ -43,7 +44,7 @@ class SetupCommand extends Command {
     await interaction.reply({
       embeds: [embed],
       components: [actionRow],
-      // ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

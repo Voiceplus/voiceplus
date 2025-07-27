@@ -76,6 +76,8 @@ class voicePanel extends Select {
       });
     }
 
+    // you must be owner...
+
     if (option === "settings") {
       switch (selectedValue) {
         case "change_name":
