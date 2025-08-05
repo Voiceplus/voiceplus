@@ -15,7 +15,6 @@ export default async function (oldState, newState) {
 
 async function handleJoin(newState) {
   const member = newState.member;
-  if (isOnCoolDown(member)) return;
 
   const setup = await client.db.setup.findFirst({
     where: { guildId: newState.guild.id },
@@ -23,7 +22,12 @@ async function handleJoin(newState) {
   if (!setup) return;
 
   const { creatorChannelId, categoryId } = setup;
+
+  // Only proceed if the joined channel is the JTC channel
   if (newState.channel.id !== creatorChannelId) return;
+
+  // Cooldown is only checked after verifying it's a JTC join
+  if (isOnCoolDown(member)) return;
 
   const existingVoiceChannel = await client.db.voice.findFirst({
     where: { guildId: newState.guild.id, ownerId: member.id },
@@ -35,7 +39,6 @@ async function handleJoin(newState) {
       .catch(() => null);
 
     if (existingChannel) {
-      if (isOnCoolDown(member)) return;
       await member.voice.setChannel(existingChannel.id).catch(() => {});
       return;
     }
@@ -67,23 +70,18 @@ async function handleJoin(newState) {
     rateLimitPerUser: 0,
   });
 
-  // Determine locked/hidden states
   const isLocked = userData?.isLocked ?? false;
   const isHidden = userData?.isHidden ?? false;
-
   const everyoneRole = newState.guild.roles.everyone;
 
-  // Permissions to deny based on locked/hidden state
   const denyPermissions = [];
   if (isLocked) denyPermissions.push(PermissionFlagsBits.Connect);
   if (isHidden) denyPermissions.push(PermissionFlagsBits.ViewChannel);
 
-  // Preserve existing permission overwrites except for owner and everyone
   const existingOverwrites = voiceChannel.permissionOverwrites.cache.filter(
     (perm) => perm.id !== member.id && perm.id !== everyoneRole.id
   );
 
-  // Construct new permission overwrites with owner and everyone handled
   const newOverwrites = [
     ...existingOverwrites.map((perm) => ({
       id: perm.id,
@@ -144,15 +142,9 @@ async function handleJoin(newState) {
     .setFooter({ text: `Powered by ${client.user.username}` })
     .setTimestamp();
 
-  // const [voicePanelSettingsComponent, voicePanelPermissionsComponent] =
-  //   generateComponents();
-
   const panelMessage = await voiceChannel.send({
     embeds: [voicePanelEmbed],
-    //   components: [
-    //     voicePanelSettingsComponent,
-    //     voicePanelPermissionsComponent,
-    //   ],
+    // components: [...]
   });
 
   promises.push(

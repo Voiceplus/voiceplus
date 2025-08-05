@@ -4,8 +4,7 @@
     "discord_lang": "en-US"
   },
   {
-    "lang": "en",
-    "discord_lang": "en-US",
+
     "cmd_voice_waiting_description": "Create a waiting room for join request to your temporary channel",
     "cmd_voice_bitrate_description": "Change the bitrate of your temporary channel",
     "cmd_voice_block_description": "Block users from accessing your temporary channe",

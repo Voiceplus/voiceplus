@@ -5,7 +5,7 @@ import {
   ActionRowBuilder,
 } from "discord.js";
 import Command from "../../lib/structs/Command.js";
-import { createComplexCustomId } from "../../lib/util/functions.js";
+import { createComplexCustomId, voiceComponents } from "../../lib/util/functions.js";
 
 class AvatarCommand extends Command {
   constructor() {
@@ -45,7 +45,7 @@ class AvatarCommand extends Command {
 
     await interaction.reply({
       content: "fish is a niggaas",
-      components: [voicePanelSettingsRow, voicePanelPermissionsRow],
+      components: voiceComponents(),
     });
   }
 }

@@ -4,6 +4,9 @@ import {
   EmbedBuilder,
   Colors,
   MessageFlags,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
+  ActionRowBuilder,
 } from "discord.js";
 import fs from "fs";
 import path from "path";
@@ -256,4 +259,83 @@ export function isOnCoolDown(member) {
 
   cooldowns.set(member.id, now);
   return false;
+}
+
+export function voiceComponents(isLocked, isHidden) {
+  const voicePanelSettings = new StringSelectMenuBuilder()
+    .setCustomId(createComplexCustomId("voicePanel", "settings"))
+    .setPlaceholder("Channel Settings")
+    .addOptions(
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Name")
+        .setDescription("Change the channel name.")
+        .setValue("name"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Limit")
+        .setDescription("Change the channel limit.")
+        .setValue("limit"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Bitrate")
+        .setDescription("Change the channel bitrate.")
+        .setValue("bitrate"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("NSFW")
+        .setDescription("Toggle the channel NSFW.")
+        .setValue("nsfw"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Claim")
+        .setDescription("Claim ownership of the channel.")
+        .setValue("claim")
+    );
+
+  const voicePanelPermissions = new StringSelectMenuBuilder()
+    .setCustomId(createComplexCustomId("voicePanel", "permissions"))
+    .setPlaceholder("Channel Permissions")
+    .addOptions(
+      new StringSelectMenuOptionBuilder()
+        .setLabel(isLocked ? "Unlock" : "Lock")
+        .setDescription(isLocked ? "Unlock the channel." : "Lock the channel.")
+        .setValue(isLocked ? "unlock" : "lock"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Trust")
+        .setDescription("Trust a user.")
+        .setValue("trust"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Untrust")
+        .setDescription("Untrust a user.")
+        .setValue("untrust"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Block")
+        .setDescription("Block a user.")
+        .setValue("block"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Unblock")
+        .setDescription("Unblock a user.")
+        .setValue("unblock"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Kick")
+        .setDescription("Kick a user.")
+        .setValue("kick"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Invite")
+        .setDescription("Invite a user to access the channel.")
+        .setValue("invite"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel(isHidden ? "Unhide" : "Hide")
+        .setDescription(isHidden ? "Unhide the channel." : "Hide the channel.")
+        .setValue(isHidden ? "unhide" : "hide"),
+      new StringSelectMenuOptionBuilder()
+        .setLabel("Transfer")
+        .setDescription("Transfer ownership of the channel.")
+        .setValue("transfer")
+    );
+
+  const voicePanelSettingsComponent = new ActionRowBuilder().addComponents(
+    voicePanelSettings
+  );
+  const voicePanelPermissionsComponent = new ActionRowBuilder().addComponents(
+    voicePanelPermissions
+  );
+
+  return [voicePanelSettingsComponent, voicePanelPermissionsComponent];
 }

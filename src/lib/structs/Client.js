@@ -65,18 +65,17 @@ class Client extends DJSClient {
   }
 
   t(key, lang = "en", replacements = {}) {
-    // Just a proxy to your utility function
     return t(this.languages, key, lang, replacements);
   }
 
-  //   async _cacheModals() {
-  //     const files = fs.readdirSync('src/modals');
-  //     for (const file of files) {
-  //       const modalClass = (await import(`../../modals/${file.slice(0, -3)}.js`)).default;
-  //       const modalInstant = new modalClass();
-  //       this.modals.set(modalInstant.name, modalInstant);
-  //     }
-  //   }
+    async _cacheModals() {
+      const files = fs.readdirSync('src/modals');
+      for (const file of files) {
+        const modalClass = (await import(`../../modals/${file.slice(0, -3)}.js`)).default;
+        const modalInstant = new modalClass();
+        this.modals.set(modalInstant.name, modalInstant);
+      }
+    }
 
   async _cacheSelectMenus() {
     const files = fs.readdirSync("src/selectMenus");
@@ -145,7 +144,7 @@ class Client extends DJSClient {
   async login(token) {
     await this._cacheSlashCommands();
     await this._cacheMessageCommands();
-    // await this._cacheModals();
+    await this._cacheModals();
     await this._cacheButtons();
     await this._cacheSelectMenus();
     await this._loadListeners();

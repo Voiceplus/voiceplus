@@ -19,7 +19,7 @@ class voicePanel extends Select {
 
     const permissionMap = {
       settings: {
-        change_name: {
+        name: {
           clientPermissions: [PermissionFlagsBits.ManageChannels],
         },
       },
@@ -54,12 +54,16 @@ class voicePanel extends Select {
       });
     }
 
-    const tempVoiceChannel = await this.client.db.voice.findFirst({
-      where: {
-        guildId: interaction.guildId,
-        channelId: interaction.member.voice.channel.id,
-      },
-    });
+    const voiceChannel = interaction.member.voice.channel;
+
+    const tempVoiceChannel = voiceChannel
+      ? await this.client.db.voice.findFirst({
+          where: {
+            guildId: interaction.guildId,
+            channelId: voiceChannel.id,
+          },
+        })
+      : null;
 
     if (!tempVoiceChannel) {
       const allSetups = await this.client.db.setup.findMany({
@@ -80,7 +84,7 @@ class voicePanel extends Select {
 
     if (option === "settings") {
       switch (selectedValue) {
-        case "change_name":
+        case "name":
           return interaction.reply({
             content: "You selected to change the channel name!",
             flags: MessageFlags.Ephemeral,
