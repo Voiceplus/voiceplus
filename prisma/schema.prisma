@@ -23,17 +23,20 @@ model Setup {
   guildId          String
   creatorChannelId String @unique
   categoryId       String
-  guild            Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
 }
 
 model Voice {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  guildId      String
-  ownerId      String
-  channelId    String   @unique
-  panelMessage String
-  guild        Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
-  invites      Invite[]
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  guildId          String
+  ownerId          String
+  channelId        String @unique
+  panelMessage     String
+  creatorChannelId String?
+
+  guild   Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  invites Invite[]
 
   @@unique([guildId, ownerId])
 }

@@ -23,6 +23,8 @@ class setupButton extends Button {
     const { option } = readComplexCustomId(interaction.customId);
     if (!option) return;
 
+    // add limit
+
     if (option === "setup_voice") {
       const category = await interaction.guild.channels.create({
         name: "Voice+",

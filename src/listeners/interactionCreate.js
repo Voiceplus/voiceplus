@@ -3,6 +3,7 @@ import { confirmGuild } from "../lib/util/functions.js";
 import Listener from "../lib/structs/Listener.js";
 import buttonPress from "../handlers/buttonPress.js";
 import selectMenu from "../handlers/selectMenu.js";
+import modalSubmit from "../handlers/modalSubmit.js";
 import { InteractionType } from "discord.js";
 
 class InteractionCreateListener extends Listener {
@@ -25,6 +26,9 @@ class InteractionCreateListener extends Listener {
         } else {
           return;
         }
+
+      case InteractionType.ModalSubmit:
+        return modalSubmit(interaction);
     }
   }
 }

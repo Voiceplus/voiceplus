@@ -1,8 +1,8 @@
 import client from "../../client.js";
 
 class Modal {
-  constructor(options = {}) {
-    this.name = options.name;
+  constructor(name) {
+    this.name = name;
     this.client = client;
   }
 }
